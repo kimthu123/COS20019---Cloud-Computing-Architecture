@@ -8,14 +8,6 @@ The infrastructure follows cloud best practices, including network segmentation,
 
 ---
 
-## Student Information
-Name: Thu Tran  
-Student ID: [Your Student ID]  
-Unit: COS20019 – Cloud Computing Architecture  
-Institution: Swinburne University of Technology  
-
----
-
 ## Architecture Overview
 The AWS infrastructure consists of the following components:
 
