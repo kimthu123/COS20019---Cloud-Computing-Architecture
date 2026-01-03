@@ -7,15 +7,6 @@ This project extends Assignment 1B by designing and deploying a **highly availab
 Photos are uploaded through the web application, stored securely in Amazon S3, processed by an AWS Lambda function to generate thumbnails, and their metadata is stored in an Amazon RDS MySQL database.
 
 ---
-
-## Student Information
-Name: Thu Tran  
-Student ID: [Your Student ID]  
-Unit: COS20019 – Cloud Computing Architecture  
-Institution: Swinburne University of Technology  
-
----
-
 ## Architecture Overview
 The infrastructure is built on top of Assignment 1B and includes:
 
