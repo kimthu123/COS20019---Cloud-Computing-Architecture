@@ -1,180 +1,142 @@
-📸 Photo Album Website on AWS
-
+# Photo Album Website on AWS  
 COS20019 – Cloud Computing Architecture | Assignment 1B
 
-📌 Project Overview
+## Project Overview
+This project involves designing, deploying, and testing a secure cloud-based Photo Album web application using Amazon Web Services (AWS). The application stores photos in an Amazon S3 bucket, photo metadata in an Amazon RDS MySQL database, and runs on an Apache web server hosted on an EC2 instance within a custom Virtual Private Cloud (VPC).
 
-This project demonstrates the design, deployment, and testing of a secure, multi-tier AWS infrastructure to host a Photo Album web application.
-The application stores photos in Amazon S3, metadata in Amazon RDS (MySQL), and runs on an Apache + PHP web server hosted on EC2, all within a custom VPC.
+The infrastructure follows cloud best practices, including network segmentation, least-privilege security, and high availability across multiple subnets.
 
-The system follows cloud best practices including:
+---
 
-Network isolation using public/private subnets
+## Student Information
+Name: Thu Tran  
+Student ID: [Your Student ID]  
+Unit: COS20019 – Cloud Computing Architecture  
+Institution: Swinburne University of Technology  
 
-Least-privilege security groups and Network ACLs
+---
 
-Bastion host access pattern
+## Architecture Overview
+The AWS infrastructure consists of the following components:
 
-Persistent public access using Elastic IP
+- Custom VPC (us-east-1)
+- Two public subnets and two private subnets across two availability zones
+- Internet Gateway for public access
+- Route tables for public and private subnets
+- Security Groups for web server, database server, and test instance
+- Network ACL applied to Public Subnet 2
+- EC2 instances for Web/Bastion server and Test instance
+- Amazon RDS MySQL database in private subnets
+- Amazon S3 bucket for photo storage
 
-🧑‍🎓 Student Information
+---
 
-Name: Thu Tran
+## EC2 Configuration
 
-Student ID: [Your Student ID]
+### Bastion / Web Server Instance
+- AMI: Amazon Linux 2
+- Instance Type: t2.micro
+- Subnet: Public Subnet 2
+- Services Installed:
+  - Apache Web Server
+  - PHP
+  - MySQL Client
+  - phpMyAdmin
+- Elastic IP associated for persistent public access
+- Hosts the Photo Album web application
+- Acts as a bastion host for SSH access to the private Test instance
 
-Unit: COS20019 – Cloud Computing Architecture
+### Test Instance
+- Located in a private subnet
+- Used for demonstration and testing only
+- Accessed via SSH through the bastion host
+- Used to ping the Web Server instance using ICMP
 
-Institution: Swinburne University of Technology
+---
 
-🏗️ Architecture Overview
+## Database Configuration (Amazon RDS)
+- Engine: MySQL 8.0.34
+- Template: Free Tier
+- Public Access: Disabled
+- Subnets: Private subnets only
+- Access restricted to WebServer Security Group
 
-The deployed infrastructure includes:
+### Database Table: photos
+Columns:
+- title (VARCHAR 255)
+- description (VARCHAR 255)
+- creation_date (DATE)
+- keywords (VARCHAR 255)
+- s3_url (VARCHAR 255)
 
-Custom VPC (us-east-1)
+---
 
-2 Public Subnets
+## S3 Photo Storage
+- A dedicated S3 bucket is used to store photos
+- Photos are uploaded manually
+- Public access is enabled using a bucket policy
+- Individual object ACLs are not used
+- Each photo is referenced in the database using its S3 object URL
 
-2 Private Subnets
+---
 
-Internet Gateway for public access
+## Web Application Functionality
+The Photo Album website provides the following features:
+- Lists all photos stored in the S3 bucket
+- Displays photo metadata retrieved from the RDS database
+- Loads and displays images directly from S3
+- Allows searching and viewing photos based on metadata
 
-Security Groups for Web, DB, and Test tiers
-
-Network ACL applied to Public Subnet 2
-
-EC2 Instances
-
-Bastion/Web Server (Public Subnet)
-
-Test Instance (Private Subnet)
-
-Amazon RDS
-
-MySQL 8.0.34 (Private Subnet)
-
-Amazon S3
-
-Public photo storage via bucket policy
-
-🖥️ EC2 Configuration
-Bastion / Web Server
-
-AMI: Amazon Linux 2
-
-Instance Type: t2.micro
-
-Services Installed:
-
-Apache
-
-PHP
-
-MySQL client
-
-phpMyAdmin
-
-Elastic IP: Enabled for persistent URL
-
-Test Instance
-
-Located in a private subnet
-
-Used to:
-
-SSH via bastion host
-
-Ping the web server (ICMP test)
-
-🗄️ Database Design (Amazon RDS)
-
-Engine: MySQL 8.0.34
-
-Access: Private only (WebServerSG)
-
-Table: photos
-
-Column Name	Type
-title	VARCHAR(255)
-description	VARCHAR(255)
-creation_date	DATE
-keywords	VARCHAR(255)
-s3_url	VARCHAR(255)
-☁️ S3 Photo Storage
-
-Photos stored in a dedicated S3 bucket
-
-Public access enabled via bucket policy
-
-Individual object ACLs not used (as per requirements)
-
-Example object URL:
-
-https://<bucket-name>.s3.amazonaws.com/example.jpg
-
-🌐 Web Application Functionality
-
-The Photo Album website allows users to:
-
-View all uploaded photos
-
-Display photo metadata from RDS
-
-Load images dynamically from S3
-
-Application URL
+Application URL format:
 http://<Elastic-IP>/cos20019/photoalbum/album.php
 
-🔐 Security Implementation
+---
 
-Security Groups
+## Security Implementation
+- Security Groups:
+  - WebServerSG: Allows HTTP (80) and SSH (22)
+  - DBServerSG: Allows MySQL (3306) access from WebServerSG only
+  - TestInstanceSG: Allows ICMP traffic
+- Network ACL:
+  - SSH (22) allowed from anywhere
+  - ICMP allowed only from the Test instance subnet
+  - HTTP traffic allowed for public users
 
-WebServerSG: HTTP (80), SSH (22)
+---
 
-DBServerSG: MySQL (3306) from WebServerSG only
+## Testing and Validation
+The following tests were successfully completed:
+- SSH access to private Test instance via Bastion host
+- ICMP ping from Test instance to Web Server instance
+- Verification of photo display from S3
+- Verification of metadata retrieval from RDS
+- Website accessibility via Elastic IP
 
-TestInstanceSG: ICMP enabled
+All required screenshots are included in the submission PDF.
 
-Network ACL
+---
 
-SSH allowed from anywhere
+## Submission Notes
+- Environment: AWS Learner Lab
+- Submission format: Single PDF document (IEEE style, maximum 15 pages)
+- Elastic IP used to ensure persistent website URL
+- All AWS resources were active and accessible at submission time
 
-ICMP allowed only from Test subnet
+---
 
-HTTP allowed for public users
+## Assignment Checklist
+- Custom VPC created
+- Public and private subnets correctly configured
+- Routing tables properly associated
+- Security groups correctly implemented
+- Network ACL applied to Public Subnet 2
+- EC2 instances deployed in correct subnets
+- RDS database created in private subnet
+- S3 objects publicly accessible via bucket policy
+- Photo Album website fully functional
 
-🧪 Testing & Validation
+---
 
-Verified:
-
-SSH access to private EC2 via bastion
-
-ICMP ping from Test instance to Web server
-
-Photos correctly rendered from S3
-
-Metadata correctly retrieved from RDS
-
-Website accessible via Elastic IP
-
-Screenshots are included in the submission PDF as required.
-
-📄 Submission Notes
-
-Environment: AWS Learner Lab
-
-Submission format: Single PDF (IEEE style, ≤15 pages)
-
-Resources checked for availability before submission
-
-Assignment complies with all functional and infrastructure requirements
-
-✅ Assignment Checklist
-
-✔ Custom VPC
-✔ Correct subnet & routing configuration
-✔ Secure EC2 deployment
-✔ RDS in private subnet
-✔ S3 public access via bucket policy
-✔ Network ACL implemented
-✔ Functional Photo Album website
+## References
+- AWS Documentation
+- COS20019 Assignment 1B Specification
